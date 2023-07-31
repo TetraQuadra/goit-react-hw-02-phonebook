@@ -14,7 +14,7 @@ export class App extends Component {
     filter: '',
   };
 
-  handleSubmit = (name, number) => {
+  handleSubmit = ({ name, number }) => {
     const { contacts } = this.state;
 
     if (contacts.find(
@@ -23,8 +23,8 @@ export class App extends Component {
       alert('Contact already exists!');
     } else {
       const newContact = {
-        name: name,
-        number: number,
+        name,
+        number,
       };
       this.setState((prevState) => ({
         contacts: [...prevState.contacts, newContact],
