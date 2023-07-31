@@ -66,4 +66,4 @@ ContactForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
 };
 
-export default ContactForm;
+export default ContactForm; 
