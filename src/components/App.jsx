@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
+import Filter from './Filter/Filter';
 
 export class App extends Component {
   state = {
@@ -11,47 +12,30 @@ export class App extends Component {
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
-    name: '',
-    number: '',
   };
 
-  handleNameChange = event => {
-    this.setState({ name: event.target.value });
-  };
+  handleSubmit = (name, number) => {
+    const { contacts } = this.state;
 
-  handleNumberChange = event => {
-    this.setState({ number: event.target.value });
-  };
-
-  handleSubmit = event => {
-    event.preventDefault();
-    const { contacts, name, number } = this.state;
-    if (name.trim() === '' || number.trim() === '') return;
-
-    const isDuplicate = contacts.some(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (isDuplicate) {
-      alert(`${name} is already in contacts.`);
-      return;
+    if (contacts.find(
+      (contact) => contact.name.toLowerCase() === name.toLowerCase()
+    )) {
+      alert('Contact already exists!');
+    } else {
+      const newContact = {
+        name: name,
+        number: number,
+      };
+      this.setState((prevState) => ({
+        contacts: [...prevState.contacts, newContact],
+      }));
     }
-
-    const newContact = {
-      id: `id-${Date.now()}`,
-      name,
-      number,
-    };
-    this.setState({
-      contacts: [...contacts, newContact],
-      name: '',
-      number: '',
-    });
   };
 
-  handleFilterChange = event => {
-    this.setState({ filter: event.target.value });
+  handleSearch = value => {
+    this.setState({ filter: value });
   };
+
   handleDeleteContact = contactId => {
     this.setState(prevState => ({
       contacts: prevState.contacts.filter(contact => contact.id !== contactId),
@@ -59,43 +43,25 @@ export class App extends Component {
   };
 
   render() {
-    const { contacts, name, number, filter } = this.state;
+    const { contacts, filter } = this.state;
 
     const filteredContacts = contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
 
     return (
-      <div
-        style={{
-          maxWidth: '400px',
-          margin: '80px auto 0',
-          padding: '20px',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-        }}
-      >
+      <main>
         <h1>Phonebook</h1>
         <ContactForm
-          name={name}
-          number={number}
-          onNameChange={this.handleNameChange}
-          onNumberChange={this.handleNumberChange}
-          onSubmit={this.handleSubmit}
+          handleSubmit={this.handleSubmit}
         />
         <h2>Contacts</h2>
-        <input
-          type="text"
-          name="filter"
-          value={filter}
-          onChange={this.handleFilterChange}
-          placeholder="Search contacts..."
-        />
+        <Filter filter={filter} handleSearch={this.handleSearch} />
         <ContactList
           contacts={filteredContacts}
           onDeleteContact={this.handleDeleteContact}
         />
-      </div>
+      </main>
     );
   }
 }
